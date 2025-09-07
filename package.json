@@ -82,6 +82,8 @@
     "@radix-ui/react-progress": "^1.0.3",
     "@radix-ui/react-separator": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
+    "and": "^0.0.3",
+    "build": "^0.1.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "dotenv": "^16.4.5",
@@ -100,6 +102,7 @@
     "stripe": "^14.22.0",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
+    "test": "^3.3.0",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
