@@ -1,6 +1,4 @@
-import { redirect } from "next/navigation";
 
-import { auth } from "@clerk/nextjs/server";
 import { getLesson, getUserProgress, getUserSubscription } from "@/db/queries";
 
 import { Quiz } from "../quiz";
@@ -12,13 +10,9 @@ type LessonIdPageProps = {
 };
 
 const LessonIdPage = async ({ params }: LessonIdPageProps) => {
-  const { userId } = await auth();
-  
-  if (!userId) return redirect("/learn");
-  
-  const lessonData = getLesson(userId, params.lessonId);
-  const userProgressData = getUserProgress(userId);
-  const userSubscriptionData = getUserSubscription(userId);
+  const lessonData = getLesson(params.lessonId);
+  const userProgressData = getUserProgress();
+  const userSubscriptionData = getUserSubscription();
 
   const [lesson, userProgress, userSubscription] = await Promise.all([
     lessonData,
@@ -26,7 +20,13 @@ const LessonIdPage = async ({ params }: LessonIdPageProps) => {
     userSubscriptionData,
   ]);
 
-  if (!lesson || !userProgress) return redirect("/learn");
+  if (!lesson || !userProgress) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <p>Lesson not found or no progress available.</p>
+      </div>
+    );
+  }
 
   const initialPercentage =
     (lesson.challenges.filter((challenge) => challenge.completed).length /

@@ -1,6 +1,5 @@
 "use server";
 
-import { auth, currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -15,10 +14,8 @@ import {
 import { challengeProgress, challenges, userProgress } from "@/db/schema";
 
 export const upsertUserProgress = async (courseId: number) => {
-  const { userId } = await auth();
-  const user = await currentUser();
-
-  if (!userId || !user) throw new Error("Unauthorized.");
+  const userId = "demo-user";
+  const user = { firstName: "Demo User", imageUrl: "/mascot.svg" };
 
   const course = await getCourseById(courseId);
 
@@ -34,7 +31,7 @@ export const upsertUserProgress = async (courseId: number) => {
       .update(userProgress)
       .set({
         activeCourseId: courseId,
-        userName: user.firstName || "User",
+        userName: user.firstName || "Demo User",
         userImageSrc: user.imageUrl || "/mascot.svg",
       })
       .where(eq(userProgress.userId, userId));
@@ -47,7 +44,7 @@ export const upsertUserProgress = async (courseId: number) => {
   await db.insert(userProgress).values({
     userId,
     activeCourseId: courseId,
-    userName: user.firstName || "User",
+    userName: user.firstName || "Demo User",
     userImageSrc: user.imageUrl || "/mascot.svg",
   });
 
@@ -57,9 +54,7 @@ export const upsertUserProgress = async (courseId: number) => {
 };
 
 export const reduceHearts = async (challengeId: number) => {
-  const { userId } = await auth();
-
-  if (!userId) throw new Error("Unauthorized.");
+  const userId = "demo-user";
 
   const currentUserProgress = await getUserProgress();
   const userSubscription = await getUserSubscription();

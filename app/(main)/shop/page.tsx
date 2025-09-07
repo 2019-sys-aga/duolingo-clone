@@ -1,7 +1,5 @@
 import Image from "next/image";
-import { redirect } from "next/navigation";
 
-import { auth } from "@clerk/nextjs/server";
 import { FeedWrapper } from "@/components/feed-wrapper";
 import { Quests } from "@/components/quests";
 import { StickyWrapper } from "@/components/sticky-wrapper";
@@ -11,17 +9,21 @@ import { getUserProgress, getUserSubscription } from "@/db/queries";
 import { Items } from "./items";
 
 const ShopPage = async () => {
-  const { userId } = await auth();
-  
-  const userProgressData = getUserProgress(userId || undefined);
-  const userSubscriptionData = getUserSubscription(userId || undefined);
+  const userProgressData = getUserProgress();
+  const userSubscriptionData = getUserSubscription();
 
   const [userProgress, userSubscription] = await Promise.all([
     userProgressData,
     userSubscriptionData,
   ]);
 
-  if (!userProgress || !userProgress.activeCourse) redirect("/courses");
+  if (!userProgress || !userProgress.activeCourse) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <p>Please select a course first.</p>
+      </div>
+    );
+  }
 
   const isPro = !!userSubscription?.isActive;
 

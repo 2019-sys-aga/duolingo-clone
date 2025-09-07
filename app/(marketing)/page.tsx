@@ -1,12 +1,3 @@
-import {
-  ClerkLoaded,
-  ClerkLoading,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-} from "@clerk/nextjs";
-import { Loader } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -25,31 +16,13 @@ export default function MarketingPage() {
         </h1>
 
         <div className="flex w-full max-w-[330px] flex-col items-center gap-y-3">
-          <ClerkLoading>
-            <Loader className="h-5 w-5 animate-spin text-muted-foreground" />
-          </ClerkLoading>
+          <Button size="lg" variant="secondary" className="w-full" asChild>
+            <Link href="/learn">Get Started</Link>
+          </Button>
 
-          <ClerkLoaded>
-            <SignedOut>
-              <SignUpButton mode="modal">
-                <Button size="lg" variant="secondary" className="w-full">
-                  Get Started
-                </Button>
-              </SignUpButton>
-
-              <SignInButton mode="modal">
-                <Button size="lg" variant="primaryOutline" className="w-full">
-                  I already have an account
-                </Button>
-              </SignInButton>
-            </SignedOut>
-
-            <SignedIn>
-              <Button size="lg" variant="secondary" className="w-full" asChild>
-                <Link href="/learn">Continue Learning</Link>
-              </Button>
-            </SignedIn>
-          </ClerkLoaded>
+          <Button size="lg" variant="primaryOutline" className="w-full" asChild>
+            <Link href="/courses">Browse Courses</Link>
+          </Button>
         </div>
       </div>
     </div>

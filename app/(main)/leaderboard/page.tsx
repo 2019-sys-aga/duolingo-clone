@@ -1,7 +1,5 @@
 import Image from "next/image";
-import { redirect } from "next/navigation";
 
-import { auth } from "@clerk/nextjs/server";
 import { FeedWrapper } from "@/components/feed-wrapper";
 import { Promo } from "@/components/promo";
 import { Quests } from "@/components/quests";
@@ -16,11 +14,9 @@ import {
 } from "@/db/queries";
 
 const LeaderboardPage = async () => {
-  const { userId } = await auth();
-  
-  const userProgressData = getUserProgress(userId || undefined);
-  const userSubscriptionData = getUserSubscription(userId || undefined);
-  const leaderboardData = getTopTenUsers(userId || undefined);
+  const userProgressData = getUserProgress();
+  const userSubscriptionData = getUserSubscription();
+  const leaderboardData = getTopTenUsers();
 
   const [userProgress, userSubscription, leaderboard] = await Promise.all([
     userProgressData,
@@ -28,7 +24,14 @@ const LeaderboardPage = async () => {
     leaderboardData,
   ]);
 
-  if (!userProgress || !userProgress.activeCourse) redirect("/courses");
+  if (!userProgress || !userProgress.activeCourse) {
+    // Create default user progress if it doesn't exist
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <p>Please select a course first.</p>
+      </div>
+    );
+  }
 
   const isPro = !!userSubscription?.isActive;
 

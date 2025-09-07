@@ -1,6 +1,4 @@
-import { redirect } from "next/navigation";
 
-import { auth } from "@clerk/nextjs/server";
 import { FeedWrapper } from "@/components/feed-wrapper";
 import { Promo } from "@/components/promo";
 import { Quests } from "@/components/quests";
@@ -18,15 +16,11 @@ import { Header } from "./header";
 import { Unit } from "./unit";
 
 const LearnPage = async () => {
-  const { userId } = await auth();
-  
-  if (!userId) redirect("/courses");
-  
-  const userProgressData = getUserProgress(userId);
-  const courseProgressData = getCourseProgress(userId);
-  const lessonPercentageData = getLessonPercentage(userId);
+  const userProgressData = getUserProgress();
+  const courseProgressData = getCourseProgress();
+  const lessonPercentageData = getLessonPercentage();
   const unitsData = getUnits();
-  const userSubscriptionData = getUserSubscription(userId);
+  const userSubscriptionData = getUserSubscription();
 
   const [
     userProgress,
@@ -42,8 +36,13 @@ const LearnPage = async () => {
     userSubscriptionData,
   ]);
 
-  if (!courseProgress || !userProgress || !userProgress.activeCourse)
-    redirect("/courses");
+  if (!courseProgress || !userProgress || !userProgress.activeCourse) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <p>Please select a course first.</p>
+      </div>
+    );
+  }
 
   const isPro = !!userSubscription?.isActive;
 

@@ -1,5 +1,3 @@
-import { ClerkLoading, ClerkLoaded, UserButton } from "@clerk/nextjs";
-import { Loader } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -41,18 +39,10 @@ export const Sidebar = ({ className }: SidebarProps) => {
       </div>
 
       <div className="p-4">
-        <ClerkLoading>
-          <Loader className="h-5 w-5 animate-spin text-muted-foreground" />
-        </ClerkLoading>
-
-        <ClerkLoaded>
-          <UserButton
-            afterSignOutUrl="/"
-            appearance={{
-              elements: { userButtonPopoverCard: { pointerEvents: "initial" } },
-            }}
-          />
-        </ClerkLoaded>
+        <div className="flex items-center gap-x-2">
+          <Image src="/mascot.svg" alt="User" height={32} width={32} />
+          <span className="text-sm font-medium">Demo User</span>
+        </div>
       </div>
     </div>
   );

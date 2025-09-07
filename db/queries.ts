@@ -20,8 +20,8 @@ export const getCourses = cache(async () => {
   return data;
 });
 
-export const getUserProgress = cache(async (userId?: string) => {
-  if (!userId) return null;
+export const getUserProgress = cache(async () => {
+  const userId = "demo-user"; // Using a demo user ID
 
   const data = await db.query.userProgress.findFirst({
     where: eq(userProgress.userId, userId),
@@ -33,10 +33,11 @@ export const getUserProgress = cache(async (userId?: string) => {
   return data;
 });
 
-export const getUnits = cache(async (userId: string) => {
-  const userProgress = await getUserProgress(userId);
+export const getUnits = cache(async () => {
+  const userId = "demo-user";
+  const userProgress = await getUserProgress();
 
-  if (!userId || !userProgress?.activeCourseId) return [];
+  if (!userProgress?.activeCourseId) return [];
 
   const data = await db.query.units.findMany({
     where: eq(units.courseId, userProgress.activeCourseId),
@@ -98,10 +99,11 @@ export const getCourseById = cache(async (courseId: number) => {
   return data;
 });
 
-export const getCourseProgress = cache(async (userId: string) => {
-  const userProgress = await getUserProgress(userId);
+export const getCourseProgress = cache(async () => {
+  const userId = "demo-user";
+  const userProgress = await getUserProgress();
 
-  if (!userId || !userProgress?.activeCourseId) return null;
+  if (!userProgress?.activeCourseId) return null;
 
   const unitsInActiveCourse = await db.query.units.findMany({
     orderBy: (units, { asc }) => [asc(units.order)],
@@ -141,10 +143,10 @@ export const getCourseProgress = cache(async (userId: string) => {
   };
 });
 
-export const getLesson = cache(async (userId: string, id?: number) => {
-  if (!userId) return null;
+export const getLesson = cache(async (id?: number) => {
+  const userId = "demo-user";
 
-  const courseProgress = await getCourseProgress(userId);
+  const courseProgress = await getCourseProgress();
   const lessonId = id || courseProgress?.activeLessonId;
 
   if (!lessonId) return null;
@@ -178,12 +180,12 @@ export const getLesson = cache(async (userId: string, id?: number) => {
   return { ...data, challenges: normalizedChallenges };
 });
 
-export const getLessonPercentage = cache(async (userId: string) => {
-  const courseProgress = await getCourseProgress(userId);
+export const getLessonPercentage = cache(async () => {
+  const courseProgress = await getCourseProgress();
 
   if (!courseProgress?.activeLessonId) return 0;
 
-  const lesson = await getLesson(userId, courseProgress?.activeLessonId);
+  const lesson = await getLesson(courseProgress?.activeLessonId);
 
   if (!lesson) return 0;
 
@@ -198,8 +200,8 @@ export const getLessonPercentage = cache(async (userId: string) => {
   return percentage;
 });
 
-export const getUserSubscription = cache(async (userId?: string) => {
-  if (!userId) return null;
+export const getUserSubscription = cache(async () => {
+  const userId = "demo-user";
 
   const data = await db.query.userSubscription.findFirst({
     where: eq(userSubscription.userId, userId),
@@ -217,8 +219,8 @@ export const getUserSubscription = cache(async (userId?: string) => {
   };
 });
 
-export const getTopTenUsers = cache(async (userId?: string) => {
-  if (!userId) return [];
+export const getTopTenUsers = cache(async () => {
+  const userId = "demo-user";
 
   const data = await db.query.userProgress.findMany({
     orderBy: (userProgress, { desc }) => [desc(userProgress.points)],
