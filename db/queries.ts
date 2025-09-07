@@ -1,6 +1,5 @@
 import { cache } from "react";
 
-import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 
 import db from "./drizzle";
@@ -21,9 +20,7 @@ export const getCourses = cache(async () => {
   return data;
 });
 
-export const getUserProgress = cache(async () => {
-  const { userId } = await auth();
-
+export const getUserProgress = cache(async (userId?: string) => {
   if (!userId) return null;
 
   const data = await db.query.userProgress.findFirst({
@@ -36,9 +33,8 @@ export const getUserProgress = cache(async () => {
   return data;
 });
 
-export const getUnits = cache(async () => {
-  const { userId } = await auth();
-  const userProgress = await getUserProgress();
+export const getUnits = cache(async (userId: string) => {
+  const userProgress = await getUserProgress(userId);
 
   if (!userId || !userProgress?.activeCourseId) return [];
 
@@ -102,9 +98,8 @@ export const getCourseById = cache(async (courseId: number) => {
   return data;
 });
 
-export const getCourseProgress = cache(async () => {
-  const { userId } = await auth();
-  const userProgress = await getUserProgress();
+export const getCourseProgress = cache(async (userId: string) => {
+  const userProgress = await getUserProgress(userId);
 
   if (!userId || !userProgress?.activeCourseId) return null;
 
@@ -146,12 +141,10 @@ export const getCourseProgress = cache(async () => {
   };
 });
 
-export const getLesson = cache(async (id?: number) => {
-  const { userId } = await auth();
-
+export const getLesson = cache(async (userId: string, id?: number) => {
   if (!userId) return null;
 
-  const courseProgress = await getCourseProgress();
+  const courseProgress = await getCourseProgress(userId);
   const lessonId = id || courseProgress?.activeLessonId;
 
   if (!lessonId) return null;
@@ -185,12 +178,12 @@ export const getLesson = cache(async (id?: number) => {
   return { ...data, challenges: normalizedChallenges };
 });
 
-export const getLessonPercentage = cache(async () => {
-  const courseProgress = await getCourseProgress();
+export const getLessonPercentage = cache(async (userId: string) => {
+  const courseProgress = await getCourseProgress(userId);
 
   if (!courseProgress?.activeLessonId) return 0;
 
-  const lesson = await getLesson(courseProgress?.activeLessonId);
+  const lesson = await getLesson(userId, courseProgress?.activeLessonId);
 
   if (!lesson) return 0;
 
@@ -205,9 +198,7 @@ export const getLessonPercentage = cache(async () => {
   return percentage;
 });
 
-export const getUserSubscription = cache(async () => {
-  const { userId } = await auth();
-
+export const getUserSubscription = cache(async (userId?: string) => {
   if (!userId) return null;
 
   const data = await db.query.userSubscription.findFirst({
@@ -226,9 +217,7 @@ export const getUserSubscription = cache(async () => {
   };
 });
 
-export const getTopTenUsers = cache(async () => {
-  const { userId } = await auth();
-
+export const getTopTenUsers = cache(async (userId?: string) => {
   if (!userId) return [];
 
   const data = await db.query.userProgress.findMany({

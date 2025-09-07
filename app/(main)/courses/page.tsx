@@ -1,10 +1,14 @@
+import { auth } from "@clerk/nextjs/server";
+
 import { getCourses, getUserProgress } from "@/db/queries";
 
 import { List } from "./list";
 
 const CoursesPage = async () => {
+  const { userId } = await auth();
+  
   const coursesData = getCourses();
-  const userProgressData = getUserProgress();
+  const userProgressData = getUserProgress(userId || undefined);
 
   const [courses, userProgress] = await Promise.all([
     coursesData,

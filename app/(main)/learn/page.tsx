@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { auth } from "@clerk/nextjs/server";
 import { FeedWrapper } from "@/components/feed-wrapper";
 import { Promo } from "@/components/promo";
 import { Quests } from "@/components/quests";
@@ -17,11 +18,15 @@ import { Header } from "./header";
 import { Unit } from "./unit";
 
 const LearnPage = async () => {
-  const userProgressData = getUserProgress();
-  const courseProgressData = getCourseProgress();
-  const lessonPercentageData = getLessonPercentage();
+  const { userId } = await auth();
+  
+  if (!userId) redirect("/courses");
+  
+  const userProgressData = getUserProgress(userId);
+  const courseProgressData = getCourseProgress(userId);
+  const lessonPercentageData = getLessonPercentage(userId);
   const unitsData = getUnits();
-  const userSubscriptionData = getUserSubscription();
+  const userSubscriptionData = getUserSubscription(userId);
 
   const [
     userProgress,

@@ -1,13 +1,18 @@
 import { redirect } from "next/navigation";
 
+import { auth } from "@clerk/nextjs/server";
 import { getLesson, getUserProgress, getUserSubscription } from "@/db/queries";
 
 import { Quiz } from "./quiz";
 
 const LessonPage = async () => {
-  const lessonData = getLesson();
-  const userProgressData = getUserProgress();
-  const userSubscriptionData = getUserSubscription();
+  const { userId } = await auth();
+  
+  if (!userId) return redirect("/learn");
+  
+  const lessonData = getLesson(userId);
+  const userProgressData = getUserProgress(userId);
+  const userSubscriptionData = getUserSubscription(userId);
 
   const [lesson, userProgress, userSubscription] = await Promise.all([
     lessonData,

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
+import { auth } from "@clerk/nextjs/server";
 import { FeedWrapper } from "@/components/feed-wrapper";
 import { Promo } from "@/components/promo";
 import { Quests } from "@/components/quests";
@@ -15,9 +16,11 @@ import {
 } from "@/db/queries";
 
 const LeaderboardPage = async () => {
-  const userProgressData = getUserProgress();
-  const userSubscriptionData = getUserSubscription();
-  const leaderboardData = getTopTenUsers();
+  const { userId } = await auth();
+  
+  const userProgressData = getUserProgress(userId || undefined);
+  const userSubscriptionData = getUserSubscription(userId || undefined);
+  const leaderboardData = getTopTenUsers(userId || undefined);
 
   const [userProgress, userSubscription, leaderboard] = await Promise.all([
     userProgressData,
